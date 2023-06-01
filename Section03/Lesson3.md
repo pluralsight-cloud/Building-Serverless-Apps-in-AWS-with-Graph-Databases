@@ -16,6 +16,16 @@ Instal Serverless:
 sudo npm install -g serverless
 ```
 
+Add Access Key Id:
+```
+export AWS_ACCESS_KEY_ID=x
+```
+
+Add Secret Access Key:
+```
+export AWS_SECRET_ACCESS_KEY=x
+```
+
 Deploy Your Service:
 ```
 sls deploy
