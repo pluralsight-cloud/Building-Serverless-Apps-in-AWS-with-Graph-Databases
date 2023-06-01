@@ -1,0 +1,18 @@
+service: acg-test-vpc
+
+frameworkVersion: ">2.0.0"
+
+provider:
+  name: aws
+  stage: dev
+  region: us-east-1
+
+resources:
+  Resources:
+     ACGTestVPC:
+      Type: AWS::EC2::VPC
+      Properties:
+          CidrBlock: 10.10.0.0/16
+          Tags:
+            - Key: Name
+              Value: acg-test-vpc
