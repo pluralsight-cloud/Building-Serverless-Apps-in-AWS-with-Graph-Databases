@@ -7,7 +7,7 @@ https://github.com/nodesource/distributions
 
 Install Node.js 19.x:
 ```
-curl -fsSL https://rpm.nodesource.com/setup_19.x | bash -
+sudo curl -fsSL https://rpm.nodesource.com/setup_19.x | bash -
 ```
 
 Instal Serverless:
