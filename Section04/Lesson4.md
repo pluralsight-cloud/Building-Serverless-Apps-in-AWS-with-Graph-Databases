@@ -1,20 +1,74 @@
 ## Section 4 Lesson 4
 
-Add required packages
+Update the system:
 ```
-sudo apt update && sudo apt install -y apt-transport-https dirmngr
-```
-
-Add the Gremlin repo
-```
-echo "deb https://deb.gremlin.com/ release non-free" | sudo tee /etc/apt/sources.list.d/gremlin.list
-```
-Import the GPG key
-```
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 9CDB294B29A5B1E2E00C24C022E8EF3461A50EF6
+sudo apt update
 ```
 
-Install Gremlin
+Install Java:
 ```
-sudo apt update && sudo apt install -y gremlin gremlind
+sudo apt install default-jre -y
 ```
+
+Verify Java's install:
+```
+java -version
+```
+
+Install unzip:
+```
+sudo apt install unzip -y
+```
+
+Download Gremlin:
+```
+wget https://dlcdn.apache.org/tinkerpop/3.6.4/apache-tinkerpop-gremlin-console-3.6.4-bin.zip
+```
+
+Run Gremlin
+```
+ ./bin/gremlin.sh 
+```
+
+Create a TinkerGraph Sandbox:
+```
+graph = TinkerGraph.open()
+```
+
+Create a graph traversal source:
+```
+g = traversal().withEmbedded(graph)
+```
+
+Add the graph data:
+```
+v1 = g.addV("person").property(id, "d5a80900-054c-11ee-be56-0242ac120002").property("name", "Bob").property("age", 45).property("born", "April 4th, 1978").property("status", "married").next()
+v2 = g.addV("person").property(id, "478689e8-054d-11ee-be56-0242ac120002").property("name", "Sally").property("age", 38).property("born", "June 9th, 1985").property("status", "married").next()
+v3 = g.addV("person").property(id, "875825ae-054d-11ee-be56-0242ac120002").property("name", "Lisa").property("age", 21).property("born", "Febuary 2nd, 2002").property("status", "single").next()
+v4 = g.addV("hobby").property(id, "e2d4fda8-054d-11ee-be56-0242ac120002").property("name", "Movies").next()
+v5 = g.addV("hobby").property(id, "044b5860-054e-11ee-be56-0242ac120002").property("name", "Hiking").next()
+
+g.addE("follows").from(v1).to(v2).property(id, "081b70d6-055a-11ee-be56-0242ac120002").property("since", "02/19/2020").next()
+g.addE("follows").from(v2).to(v1).property(id, "a0ae9a42-056b-11ee-be56-0242ac120002").property("since", "02/19/2020").next()
+
+g.addE("interest").from(v1).to(v4).property(id, "4e760c6c-055a-11ee-be56-0242ac120002").property("weight", 9.0).next()
+g.addE("interest").from(v4).to(v1).property(id, "89de65da-056c-11ee-be56-0242ac120002").property("weight", 9.0).next()
+
+g.addE("interest").from(v2).to(v4).property(id, "7f197746-055a-11ee-be56-0242ac120002").property("weight", 4.0).next()
+g.addE("interest").from(v4).to(v2).property(id, "8e830992-056c-11ee-be56-0242ac120002").property("weight", 4.0).next()
+
+
+g.addE("interest").from(v3).to(v4).property(id, "92a6068a-055a-11ee-be56-0242ac120002").property("weight", 1.0).next()
+g.addE("interest").from(v4).to(v3).property(id, "a2d0c7fe-056c-11ee-be56-0242ac120002").property("weight", 1.0).next()
+
+g.addE("interest").from(v1).to(v5).property(id, "acd4da40-055a-11ee-be56-0242ac120002").property("weight", 5.0).next()
+g.addE("interest").from(v5).to(v1).property(id, "a2d0c7fe-056c-11ee-be56-0242ac120002").property("weight", 5.0).next()
+
+
+g.addE("interest").from(v2).to(v5).property(id, "c745dfa0-055a-11ee-be56-0242ac120002").property("weight", 0.0).next()
+g.addE("interest").from(v5).to(v2).property(id, "d99bb33e-056c-11ee-be56-0242ac120002").property("weight", 0.0).next()
+
+g.addE("interest").from(v3).to(v5).property(id, "e9d13330-055a-11ee-be56-0242ac120002").property("weight", 9.0).next()
+g.addE("interest").from(v5).to(v3).property(id, "e9deb8f4-056c-11ee-be56-0242ac120002").property("weight", 9.0).next()
+```
+
