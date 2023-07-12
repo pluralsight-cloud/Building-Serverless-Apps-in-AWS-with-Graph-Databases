@@ -62,32 +62,28 @@ g.addE("follows").from(v1).to(v2).property(id, "081b70d6-055a-11ee-be56-0242ac12
 g.addE("follows").from(v2).to(v1).property(id, "a0ae9a42-056b-11ee-be56-0242ac120002").property("since", "02/19/2020").next()
 
 g.addE("interest").from(v1).to(v4).property(id, "4e760c6c-055a-11ee-be56-0242ac120002").property("weight", 9.0).next()
-g.addE("interest").from(v4).to(v1).property(id, "89de65da-056c-11ee-be56-0242ac120002").property("weight", 9.0).next()
 
 g.addE("interest").from(v2).to(v4).property(id, "7f197746-055a-11ee-be56-0242ac120002").property("weight", 4.0).next()
-g.addE("interest").from(v4).to(v2).property(id, "8e830992-056c-11ee-be56-0242ac120002").property("weight", 4.0).next()
 
 g.addE("interest").from(v3).to(v4).property(id, "92a6068a-055a-11ee-be56-0242ac120002").property("weight", 1.0).next()
-g.addE("interest").from(v4).to(v3).property(id, "a2d0c7fe-056c-11ee-be56-0242ac120002").property("weight", 1.0).next()
 
 g.addE("interest").from(v1).to(v5).property(id, "acd4da40-055a-11ee-be56-0242ac120002").property("weight", 5.0).next()
-g.addE("interest").from(v5).to(v1).property(id, "0dea4a22-20db-11ee-be56-0242ac120002").property("weight", 5.0).next()
 
 g.addE("interest").from(v2).to(v5).property(id, "c745dfa0-055a-11ee-be56-0242ac120002").property("weight", 0.0).next()
-g.addE("interest").from(v5).to(v2).property(id, "d99bb33e-056c-11ee-be56-0242ac120002").property("weight", 0.0).next()
 
 g.addE("interest").from(v3).to(v5).property(id, "e9d13330-055a-11ee-be56-0242ac120002").property("weight", 9.0).next()
-g.addE("interest").from(v5).to(v3).property(id, "e9deb8f4-056c-11ee-be56-0242ac120002").property("weight", 9.0).next()
 ```
 
 Basic queries:
 ```
 g.V().has("person","name","Bob")
 g.V().has("person","name","Bob").values("name")
+g.V("d5a80900-054c-11ee-be56-0242ac120002").values("name")
 g.V().has("person","name","Bob").out("interest")
 g.V().has("person","name","Bob").out("interest").values("name")
 g.V().has("person","name","Bob").out("interest").in("interest").values("name")
 g.V().has("person","name","Bob").as("exclude").out("interest").in("interest").where(neq("exclude")).values("name")
+g.V().has("person","name","Bob").as("exclude").out("interest").in("interest").where(neq("exclude")).values("name").dedup()
 ```
 
 Find Bob's followers:
@@ -97,5 +93,5 @@ g.V("d5a80900-054c-11ee-be56-0242ac120002").outE("follows").inV().hasLabel("pers
 
 Find people not following Bob:
 ```
-g.V("d5a80900-054c-11ee-be56-0242ac120002").as("user").outE("follows").inV().hasLabel("person").as("followers").V().hasLabel("person").where(neq("followers")).where(neq("user")).values("name")
+g.V("d5a80900-054c-11ee-be56-0242ac120002").as("user").out("follows").hasLabel("person").as("followers").V().hasLabel("person").where(neq("followers")).where(neq("user")).values("name")
 ```
