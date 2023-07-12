@@ -2,7 +2,7 @@
 
 Update the system:
 ```
-sudo apt update
+sudo apt update -y
 ```
 
 Install Java:
@@ -23,6 +23,16 @@ sudo apt install unzip -y
 Download Gremlin:
 ```
 wget https://dlcdn.apache.org/tinkerpop/3.6.4/apache-tinkerpop-gremlin-console-3.6.4-bin.zip
+```
+
+Unzip the file:
+```
+unzip apache-tinkerpop-gremlin-console-3.6.4-bin.zip
+```
+
+Navigate to the folder:
+```
+cd apache-tinkerpop-gremlin-console-3.6.4/
 ```
 
 Run Gremlin
@@ -62,7 +72,7 @@ g.addE("interest").from(v3).to(v4).property(id, "92a6068a-055a-11ee-be56-0242ac1
 g.addE("interest").from(v4).to(v3).property(id, "a2d0c7fe-056c-11ee-be56-0242ac120002").property("weight", 1.0).next()
 
 g.addE("interest").from(v1).to(v5).property(id, "acd4da40-055a-11ee-be56-0242ac120002").property("weight", 5.0).next()
-g.addE("interest").from(v5).to(v1).property(id, "a2d0c7fe-056c-11ee-be56-0242ac120002").property("weight", 5.0).next()
+g.addE("interest").from(v5).to(v1).property(id, "0dea4a22-20db-11ee-be56-0242ac120002").property("weight", 5.0).next()
 
 
 g.addE("interest").from(v2).to(v5).property(id, "c745dfa0-055a-11ee-be56-0242ac120002").property("weight", 0.0).next()
@@ -72,3 +82,22 @@ g.addE("interest").from(v3).to(v5).property(id, "e9d13330-055a-11ee-be56-0242ac1
 g.addE("interest").from(v5).to(v3).property(id, "e9deb8f4-056c-11ee-be56-0242ac120002").property("weight", 9.0).next()
 ```
 
+Basic queries:
+```
+g.V().has("person","name","Bob")
+g.V().has("person","name","Bob").values("name")
+g.V().has("person","name","Bob").out("interest")
+g.V().has("person","name","Bob").out("interest").values("name")
+g.V().has("person","name","Bob").out("interest").in("interest").values("name")
+g.V().has("person","name","Bob").as("exclude").out("interest").in("interest").where(neq("exclude")).values("name")
+```
+
+Find Bob's followers:
+```
+g.V("d5a80900-054c-11ee-be56-0242ac120002").outE("follows").inV().hasLabel("person").values("name")
+```
+
+Find people not following Bob:
+```
+g.V("d5a80900-054c-11ee-be56-0242ac120002").as("user").outE("follows").inV().hasLabel("person").as("followers").V().hasLabel("person").where(neq("followers")).where(neq("user")).values("name")
+```
