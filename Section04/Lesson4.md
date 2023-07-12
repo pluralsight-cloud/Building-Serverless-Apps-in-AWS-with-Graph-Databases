@@ -67,13 +67,11 @@ g.addE("interest").from(v4).to(v1).property(id, "89de65da-056c-11ee-be56-0242ac1
 g.addE("interest").from(v2).to(v4).property(id, "7f197746-055a-11ee-be56-0242ac120002").property("weight", 4.0).next()
 g.addE("interest").from(v4).to(v2).property(id, "8e830992-056c-11ee-be56-0242ac120002").property("weight", 4.0).next()
 
-
 g.addE("interest").from(v3).to(v4).property(id, "92a6068a-055a-11ee-be56-0242ac120002").property("weight", 1.0).next()
 g.addE("interest").from(v4).to(v3).property(id, "a2d0c7fe-056c-11ee-be56-0242ac120002").property("weight", 1.0).next()
 
 g.addE("interest").from(v1).to(v5).property(id, "acd4da40-055a-11ee-be56-0242ac120002").property("weight", 5.0).next()
 g.addE("interest").from(v5).to(v1).property(id, "0dea4a22-20db-11ee-be56-0242ac120002").property("weight", 5.0).next()
-
 
 g.addE("interest").from(v2).to(v5).property(id, "c745dfa0-055a-11ee-be56-0242ac120002").property("weight", 0.0).next()
 g.addE("interest").from(v5).to(v2).property(id, "d99bb33e-056c-11ee-be56-0242ac120002").property("weight", 0.0).next()
