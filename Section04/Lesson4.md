@@ -88,7 +88,7 @@ g.V().has("person","name","Bob").as("exclude").out("interest").in("interest").wh
 
 Find Bob's followers:
 ```
-g.V("d5a80900-054c-11ee-be56-0242ac120002").outE("follows").inV().hasLabel("person").values("name")
+g.V("d5a80900-054c-11ee-be56-0242ac120002").out("follows").hasLabel("person").values("name")
 ```
 
 Find people not following Bob:
