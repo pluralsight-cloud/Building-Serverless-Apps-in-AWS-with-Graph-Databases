@@ -1,8 +1,4 @@
 ```
-serverless config credentials   --provider aws   --key AKIATC2S6G5WVQNAPEVS   --secret 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
-```
-
-```
 sls deploy --param="ssh-key-name=neptune-key" --param="dbcluster=acg-neptune-demo"
 ```
 
