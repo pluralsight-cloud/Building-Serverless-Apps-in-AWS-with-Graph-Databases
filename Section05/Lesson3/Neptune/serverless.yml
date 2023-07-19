@@ -27,19 +27,7 @@ resources:
       Type: String
       Default: db.t3.medium
       AllowedValues:
-        - db.serverless
         - db.t3.medium
-        - db.r6g.large
-        - db.r6g.xlarge
-        - db.r6g.2xlarge
-        - db.r6g.4xlarge
-        - db.r6g.8xlarge
-        - db.r5.large
-        - db.r5.xlarge
-        - db.r5.2xlarge
-        - db.r5.4xlarge
-        - db.r5.8xlarge
-        - db.r5.12xlarge
       ConstraintDescription: >-
         Must be a valid Neptune instance type. Note that for Stockholm and OSU
         only R5 and T3 instances are available.
@@ -87,20 +75,7 @@ resources:
       Type: String
       Default: t3.small
       AllowedValues:
-        - none
-        - t3.micro
         - t3.small
-        - t3.medium
-        - m5.large
-        - m5.xlarge
-        - m5.2xlarge
-        - m5.4xlarge
-        - m5.12xlarge
-        - r5.large
-        - r5.xlarge
-        - r5.2xlarge
-        - r5.4xlarge
-        - r5.12xlarge
       ConstraintDescription: >-
         Must be a valid EC2 instance type. Note some regions support limited
         instance types only. Ex: Stockholm and OSU does not support R4 instances
@@ -157,45 +132,6 @@ resources:
       Default: none
       AllowedValues:
         - none
-        - ml.t2.medium
-        - ml.t2.large
-        - ml.t2.xlarge
-        - ml.t2.2xlarge
-        - ml.t3.medium
-        - ml.t3.large
-        - ml.t3.xlarge
-        - ml.t3.2xlarge
-        - ml.m4.xlarge
-        - ml.m4.2xlarge
-        - ml.m4.4xlarge
-        - ml.m4.10xlarge
-        - ml.m4.16xlarge
-        - ml.m5.xlarge
-        - ml.m5.2xlarge
-        - ml.m5.4xlarge
-        - ml.m5.12xlarge
-        - ml.m5.24xlarge
-        - ml.c4.large
-        - ml.c4.xlarge
-        - ml.c4.2xlarge
-        - ml.c4.4xlarge
-        - ml.c4.8xlarge
-        - ml.c5.xlarge
-        - ml.c5.2xlarge
-        - ml.c5.4xlarge
-        - ml.c5.9xlarge
-        - ml.c5.18xlarge
-        - ml.c5d.xlarge
-        - ml.c5d.2xlarge
-        - ml.c5d.4xlarge
-        - ml.c5d.9xlarge
-        - ml.c5d.18xlarge
-        - ml.p3.2xlarge
-        - ml.p3.8xlarge
-        - ml.p3.16xlarge
-        - ml.p2.2xlarge
-        - ml.p2.8xlarge
-        - ml.p2.16xlarge
       ConstraintDescription: Must be a valid SageMaker instance type.
     NeptuneSagemakerNotebookStartupScript:
       Description: 'OPTIONAL: Startup script additions for the notebook instance.'
