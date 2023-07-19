@@ -1,11 +1,9 @@
-```
-serverless config credentials   --provider aws   --key AKIATC2S6G5WVQNAPEVS   --secret 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
-```
-
+Deploy Neptune:
 ```
 sls deploy --param="ssh-key-name=neptune-key" --param="dbcluster=acg-neptune-demo"
 ```
 
+Connect to Neptuen:
 ```
 :remote connect tinkerpop.server conf/neptune-remote.yaml
 :remote console
@@ -19,8 +17,8 @@ g.addV("person").property(id, "875825ae-054d-11ee-be56-0242ac120002").property("
 g.addV("hobby").property(id, "e2d4fda8-054d-11ee-be56-0242ac120002").property("name", "Movies").next()
 g.addV("hobby").property(id, "044b5860-054e-11ee-be56-0242ac120002").property("name", "Hiking").next()
 
-g.V('d5a80900-054c-11ee-be56-0242ac120002').as('v1').V(478689e8-054d-11ee-be56-0242ac120002').as('v2').addE("follows").from('v1').to('v2').property(id, "081b70d6-055a-11ee-be56-0242ac120002").property("since", "02/19/2020").iterate()
-g.V('d5a80900-054c-11ee-be56-0242ac120002').as('v1').V(478689e8-054d-11ee-be56-0242ac120002').as('v2').addE("follows").from('v2').to('v1').property(id, "a0ae9a42-056b-11ee-be56-0242ac120002").property("since", "02/19/2020").iterate()
+g.V('d5a80900-054c-11ee-be56-0242ac120002').as('v1').V('478689e8-054d-11ee-be56-0242ac120002').as('v2').addE("follows").from('v1').to('v2').property(id, "081b70d6-055a-11ee-be56-0242ac120002").property("since", "02/19/2020").iterate()
+g.V('d5a80900-054c-11ee-be56-0242ac120002').as('v1').V('478689e8-054d-11ee-be56-0242ac120002').as('v2').addE("follows").from('v2').to('v1').property(id, "a0ae9a42-056b-11ee-be56-0242ac120002").property("since", "02/19/2020").iterate()
 
 g.V('d5a80900-054c-11ee-be56-0242ac120002').as('v1').V('e2d4fda8-054d-11ee-be56-0242ac120002').as('v4').addE("interest").from('v1').to('v4').property(id, '4e760c6c-055a-11ee-be56-0242ac120002').property('weight', 9.0).iterate()
 g.V('d5a80900-054c-11ee-be56-0242ac120002').as('v1').V('044b5860-054e-11ee-be56-0242ac120002').as('v5').addE("interest").from('v1').to('v5').property(id, '7f197746-055a-11ee-be56-0242ac120002').property('weight', 9.0).iterate()

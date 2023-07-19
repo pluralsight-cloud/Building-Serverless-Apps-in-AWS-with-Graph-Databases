@@ -32,18 +32,21 @@ router.post('/people/add', async function (req, res, next) {
     res.json(data);
 });
 
-router.post('/people/:from/follow', async function (req, res, next) {
-    const { from } = req.params;
+router.post('/people/:id/follow', async function (req, res, next) {
+    const { id } = req.params;
     const { to } = req.body;
     const date = new Date();
 
-    console.log(req.body);
-    console.log(to);
+    console.log("id", id);
+    console.log("to", to);
+    console.log("date", date);
+    console.log('query', `g.V('${id}').addE('follows').to(__.V('${to}')).property("since", '${date.toString()}').iterate()`);
 
-    const data = await gR.V(from).as('v1').V(to).as('v2').addE("follows").from('v1').to('v2').property("since", date.toString()).iterate();
-    //console.log(`gR.V(${from}).as('v1').V(${to}).as('v2').addE("follows").from('v1').to('v2').property("since", ${date.format('MMM DD, YYYY')}).iterate()`);
+    //const data = await gR.V(`'${id}'`).as('v1').V(`'${to}'`).as('v2').addE('follows').from('v1').to('v2').property("since", `'${date.toString()}'`).iterate();
+    const data = await gR.V(`'${id}'`).addE('follows').to(__.V(`'${to}'`)).property("since", `'${date.toString()}'`).iterate();
+    //const data = {'bla': 'test'}; 
     
-    console.log(data);
+    console.log("data", data);
     
     res.json(data);
 });
