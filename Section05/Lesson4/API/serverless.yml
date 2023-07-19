@@ -1,0 +1,44 @@
+service: acg-demo-api
+
+plugins:
+  - serverless-webpack
+  - serverless-pseudo-parameters
+  - serverless-plugin-vpc-eni-cleanup
+provider:
+  name: aws
+  runtime: nodejs19.x
+  vpc:
+    securityGroupIds:
+      - ${cf:${self:custom.neptuneStackName}.NeptuneClientSecurityGroup}
+    subnetIds:
+      - ${cf:${self:custom.neptuneStackName}.Subnet1}
+      - ${cf:${self:custom.neptuneStackName}.Subnet2}
+      - ${cf:${self:custom.neptuneStackName}.Subnet3}
+      - ${cf:${self:custom.neptuneStackName}.Subnet4}
+  stage: dev
+  region: us-east-1
+  environment:
+    CLUSTER_ENDPOINT: ${cf:${self:custom.neptuneStackName}.GremlinEndpoint}
+    PROVIDER: aws
+
+custom:
+  webpackIncludeModules:
+    forceInclude:
+      - gremlin
+      - isomorphic-fetch
+  neptuneStackName: acg-demo-neptune-dev
+
+functions:
+  api:
+    handler: src/app.handler
+    events:
+      - http:
+          path: /
+          method: ANY
+          cors: true
+          private: false
+      - http:
+          path: /{any+}
+          method: ANY
+          cors: true
+          private: false
