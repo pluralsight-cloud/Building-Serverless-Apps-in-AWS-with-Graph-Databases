@@ -23,6 +23,22 @@ router.get('/people/:id', async function (req, res, next) {
     res.json(data);
 });
 
+router.get('/people/:id/followers', async function (req, res, next) {
+    const { id } = req.params;
+    const data = await gR.V(id).out("follows").hasLabel("person").valueMap(true).toList();
+    console.log(data)
+    
+    res.json(data);
+});
+
+router.get('/people/:id/hobbies', async function (req, res, next) {
+    const { id } = req.params;
+    const data = await gR.V(id).out("interest").hasLabel("hobby").valueMap(true).toList();
+    console.log(data)
+    
+    res.json(data);
+});
+
 router.post('/people/add', async function (req, res, next) {
     const { name, age, status, born} = req.body;
 
@@ -50,7 +66,6 @@ router.post('/people/:id/follow', async function (req, res, next) {
     
     res.json(data);
 });
-
 
 router.delete('/people/:id', async function (req, res, next) {
     const { id } = req.params;
