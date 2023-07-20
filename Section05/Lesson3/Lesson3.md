@@ -1,3 +1,13 @@
+Add Access Key Id:
+```
+export AWS_ACCESS_KEY_ID=x
+```
+
+Add Secret Access Key:
+```
+export AWS_SECRET_ACCESS_KEY=x
+```
+
 Deploy Neptune:
 ```
 sls deploy --param="ssh-key-name=neptune-key" --param="dbcluster=acg-neptune-demo"
