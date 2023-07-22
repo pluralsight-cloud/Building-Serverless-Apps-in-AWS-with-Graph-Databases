@@ -1,7 +1,8 @@
-import express from "express";
+const express = require('express');
+const gremlin = require('gremlin');
 
 const router = express.Router();
-const gremlin = require('gremlin');
+
 const DriverRemoteConnection = gremlin.driver.DriverRemoteConnection;
 const Graph = gremlin.structure.Graph;
 const dcReader = new DriverRemoteConnection('wss://'+ process.env.CLUSTER_ENDPOINT +':8182/gremlin', { mimeType: "application/vnd.gremlin-v2.0+json" });
@@ -23,4 +24,5 @@ router.get('/hobbies/:id', async function (req, res, next) {
     res.json(data);
 });
 
-export default router;
+module.exports =  router;
+//export default router;

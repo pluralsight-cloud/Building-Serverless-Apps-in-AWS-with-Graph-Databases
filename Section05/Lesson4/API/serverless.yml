@@ -1,8 +1,8 @@
-service: acg-demo-api
+service: acg-neptune-api
 
 plugins:
-  - serverless-webpack
   - serverless-plugin-vpc-eni-cleanup
+ # - serverless-webpack
 provider:
   name: aws
   runtime: nodejs18.x
