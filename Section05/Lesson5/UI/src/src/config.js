@@ -1,3 +1,3 @@
 module.exports = {
-    api: "https://r56i3aoeq8.execute-api.us-east-1.amazonaws.com/dev"
+    api: "https://9d1gvblxk8.execute-api.us-east-1.amazonaws.com/dev/"
 }

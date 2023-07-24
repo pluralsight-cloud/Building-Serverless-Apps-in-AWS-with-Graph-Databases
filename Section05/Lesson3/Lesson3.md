@@ -31,11 +31,11 @@ g.V('d5a80900-054c-11ee-be56-0242ac120002').as('v1').V('478689e8-054d-11ee-be56-
 g.V('d5a80900-054c-11ee-be56-0242ac120002').as('v1').V('478689e8-054d-11ee-be56-0242ac120002').as('v2').addE("follows").from('v2').to('v1').property(id, "a0ae9a42-056b-11ee-be56-0242ac120002").property("since", "02/19/2020").iterate()
 
 g.V('d5a80900-054c-11ee-be56-0242ac120002').as('v1').V('e2d4fda8-054d-11ee-be56-0242ac120002').as('v4').addE("interest").from('v1').to('v4').property(id, '4e760c6c-055a-11ee-be56-0242ac120002').property('weight', 9.0).iterate()
-g.V('d5a80900-054c-11ee-be56-0242ac120002').as('v1').V('044b5860-054e-11ee-be56-0242ac120002').as('v5').addE("interest").from('v1').to('v5').property(id, '7f197746-055a-11ee-be56-0242ac120002').property('weight', 9.0).iterate()
+g.V('d5a80900-054c-11ee-be56-0242ac120002').as('v1').V('044b5860-054e-11ee-be56-0242ac120002').as('v5').addE("interest").from('v1').to('v5').property(id, '7f197746-055a-11ee-be56-0242ac120002').property('weight', 4.0).iterate()
 
-g.V('478689e8-054d-11ee-be56-0242ac120002').as('v2').V('e2d4fda8-054d-11ee-be56-0242ac120002').as('v4').addE("interest").from('v2').to('v4').property(id, '92a6068a-055a-11ee-be56-0242ac120002').property('weight', 9.0).iterate()
-g.V('478689e8-054d-11ee-be56-0242ac120002').as('v2').V('044b5860-054e-11ee-be56-0242ac120002').as('v5').addE("interest").from('v2').to('v5').property(id, 'acd4da40-055a-11ee-be56-0242ac120002').property('weight', 9.0).iterate()
+g.V('478689e8-054d-11ee-be56-0242ac120002').as('v2').V('e2d4fda8-054d-11ee-be56-0242ac120002').as('v4').addE("interest").from('v2').to('v4').property(id, '92a6068a-055a-11ee-be56-0242ac120002').property('weight', 1.0).iterate()
+g.V('478689e8-054d-11ee-be56-0242ac120002').as('v2').V('044b5860-054e-11ee-be56-0242ac120002').as('v5').addE("interest").from('v2').to('v5').property(id, 'acd4da40-055a-11ee-be56-0242ac120002').property('weight', 5.0).iterate()
 
-g.V('875825ae-054d-11ee-be56-0242ac120002').as('v3').V('e2d4fda8-054d-11ee-be56-0242ac120002').as('v4').addE("interest").from('v3').to('v4').property(id, 'c745dfa0-055a-11ee-be56-0242ac120002').property('weight', 9.0).iterate()
+g.V('875825ae-054d-11ee-be56-0242ac120002').as('v3').V('e2d4fda8-054d-11ee-be56-0242ac120002').as('v4').addE("interest").from('v3').to('v4').property(id, 'c745dfa0-055a-11ee-be56-0242ac120002').property('weight', 0.0).iterate()
 g.V('875825ae-054d-11ee-be56-0242ac120002').as('v3').V('044b5860-054e-11ee-be56-0242ac120002').as('v5').addE("interest").from('v3').to('v5').property(id, 'e9d13330-055a-11ee-be56-0242ac120002').property('weight', 9.0).iterate()
 ```

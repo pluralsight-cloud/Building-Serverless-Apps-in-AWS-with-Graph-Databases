@@ -1,21 +1,17 @@
 import React from "react";
 import useConfig from "./useConfig";
-import { Row, Col, List, Space } from 'antd';
+import { Row, Col, List, Typography } from 'antd';
 
 const Hobbies = ({hobbies}) => {
     const { app } = useConfig();
     return (
         <div>
-            <h2>Hobbies</h2>
+            <h3>Interests</h3>
              <List 
                 dataSource={hobbies}
                 renderItem={item => (
                     <List.Item>
-                        <List.Item.Meta title={(
-                            <Space direction='vertical'>
-                                <div>{item.name[0]}</div>
-                            </Space>
-                        )} />
+                        <Typography.Text mark></Typography.Text> {item.name[0]}
                     </List.Item>
                 )}
             />
