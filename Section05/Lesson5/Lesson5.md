@@ -3,6 +3,11 @@ React Serverless Boilderplate:
 https://github.com/arabold/serverless-react-boilerplate
 ```
 
+Add Serverless Webpack:
+```
+sls plugin install -n serverless-webpack
+```
+
 Install Node packages:
 ```
 npm install
