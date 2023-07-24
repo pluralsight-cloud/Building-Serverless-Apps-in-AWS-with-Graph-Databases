@@ -1,9 +1,19 @@
-
-
+React Serverless Boilderplate:
 ```
-sls create --template aws-nodejs
+https://github.com/arabold/serverless-react-boilerplate
 ```
 
+Install Node packages:
 ```
-sls
+npm install
+```
+
+Update the config file w/ API URL:
+```
+vi config.js
+```
+
+Deploy the UI:
+```
+sls deploy
 ```
