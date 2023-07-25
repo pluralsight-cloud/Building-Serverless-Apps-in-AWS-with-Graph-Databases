@@ -14,11 +14,6 @@ Install Packages:
 npm install
 ```
 
-Install Severless Webpack:
-```
-sls plugin install -n serverless-webpack
-```
-
 ```
 sls deploy
 ```

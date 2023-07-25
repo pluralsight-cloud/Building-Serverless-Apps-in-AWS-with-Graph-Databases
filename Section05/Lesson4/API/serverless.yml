@@ -2,7 +2,7 @@ service: acg-neptune-api
 
 plugins:
   - serverless-plugin-vpc-eni-cleanup
- # - serverless-webpack
+
 provider:
   name: aws
   runtime: nodejs18.x
@@ -21,10 +21,6 @@ provider:
     PROVIDER: aws
 
 custom:
-  webpackIncludeModules:
-    forceInclude:
-      - gremlin
-      - isomorphic-fetch
   neptuneStackName: acg-demo-neptune-dev
   
 functions:
