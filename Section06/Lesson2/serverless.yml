@@ -1,0 +1,33 @@
+service: acg-neptune-load-data
+
+plugins:
+  - serverless-s3-remover
+
+custom:
+  remover:
+    buckets:
+      - ${self:provider.environment.S3_BUCKET}
+
+provider:
+  name: aws
+  region: us-east-1
+  environment:
+    S3_BUCKET: '${param:bucket-name}'
+    
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:GetObject"
+        - "s3:PutObject"
+        - "s3:DeleteObject"
+        - "s3:ListBucket"
+      Resource:
+        - "arn:aws:s3:::${self:provider.environment.S3_BUCKET}/*"
+    - Effect: "Allow"
+      Resource: "*"
+
+resources:
+  Outputs:
+    S3Bucket:
+      Description: S3 bucket for neptune to load from
+      Value: ${self:provider.environment.S3_BUCKET}

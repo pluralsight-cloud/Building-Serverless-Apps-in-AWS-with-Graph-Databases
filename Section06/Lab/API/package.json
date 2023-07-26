@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "serverless-plugin-vpc-eni-cleanup": "^1.0.4",
+    "serverless-pseudo-parameters": "^2.6.1",
+    "serverless-webpack": "^5.11.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "gremlin": "^3.6.4"
+  }
+}

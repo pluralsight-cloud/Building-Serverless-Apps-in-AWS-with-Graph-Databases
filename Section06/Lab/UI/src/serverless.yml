@@ -1,0 +1,143 @@
+service: neptuen-demo-ui
+useDotenv: true
+disabledDeprecations:
+  - CLI_OPTIONS_SCHEMA # some Serverless plugins haven't been updated yet and generate warnings
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: us-east-1
+  stage: dev
+
+  apiGateway:
+    shouldStartNameWithService: true
+
+  environment:
+    SERVERLESS_PROJECT: ${self:service}
+    SERVERLESS_REGION: ${self:provider.region}
+    SERVERLESS_STAGE: ${self:provider.stage}
+
+    APP_DIST_URL: ${self:custom.distBucketUrl.${self:provider.region}, self:custom.distBucketUrl.default}
+    APP_PUBLIC_URL: ${self:custom.distBucketUrl.${self:provider.region}, self:custom.distBucketUrl.default}
+    APIGATEWAY_URL:
+      Fn::Join:
+        - ""
+        - - https://
+          - Ref: ApiGatewayRestApi
+          - .execute-api.
+          - Ref: AWS::Region
+          - .amazonaws.com/
+          - ${self:provider.stage}
+
+plugins:
+  - serverless-webpack
+  - serverless-plugin-scripts
+  - serverless-offline
+  - serverless-s3-deploy
+#  - serverless-s3-remover
+functions:
+  serve:
+    # Any web request regardless of path or method will be handled by a single Lambda function
+    handler: handler.serve
+    events:
+      - http:
+          path: /
+          method: any
+          cors: true
+      - http:
+          path: /{any+}
+          method: any
+          cors: true
+
+custom:
+  neptuneAPIStackName: acg-neptune-api-dev
+  distBucketUrl:
+    us-east-1:
+      # us-east-1 uses a different URL format than the other regions
+      Fn::Join:
+        - ""
+        - - https://s3.amazonaws.com/
+          - Ref: DistBucket
+    default:
+      # All other regions
+      Fn::Join:
+        - ""
+        - - https://s3-
+          - Ref: AWS::Region
+          - .amazonaws.com/
+          - Ref: DistBucket
+
+  scripts:
+    hooks:
+      # Build the client-side script before packaging backend code
+      package:initialize: "npm run build:browser"
+
+  webpack:
+    webpackConfig: "webpack.server.config.js"
+
+  assets:
+    auto: true
+    targets:
+      - bucket:
+          Ref: DistBucket
+        acl: public-read
+        files:
+          - source: dist/
+            headers:
+              CacheControl: max-age=31104000 # 1 year
+            globs:
+              - "**/*"
+
+  serverless-offline:
+    useChildProcesses: true
+    noPrependStageInUrl: true
+    httpPort: 3000
+    lambdaPort: 3002
+
+resources:
+  Resources:
+    # Customize the API Gateway resource
+    ApiGatewayRestApi:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        # Enable gzip compression
+        MinimumCompressionSize: 1000
+
+    # S3 Bucket for the distribution bundles
+    DistBucket:
+      Type: AWS::S3::Bucket
+      DeletionPolicy: Delete
+      Properties:
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: ObjectWriter
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - "*"
+              AllowedMethods:
+                - "GET"
+              AllowedOrigins:
+                - Fn::Join:
+                    - ""
+                    - - https://
+                      - Ref: ApiGatewayRestApi
+                      - .execute-api.
+                      - Ref: AWS::Region
+                      - .amazonaws.com
+              MaxAge: 3000
+
+  Outputs:
+    ApiGatewayRestApi:
+      Description: API Gateway Endpoint
+      Value:
+        Ref: ApiGatewayRestApi
+    DistBucket:
+      Description: Distribution S3 Bucket
+      Value:
+        Ref: DistBucket

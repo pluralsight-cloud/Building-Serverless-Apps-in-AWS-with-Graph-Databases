@@ -1,0 +1,489 @@
+service: acg-demo-neptune
+
+frameworkVersion: ">2.0.0"
+
+provider:
+  name: aws
+  stage: dev
+  region: us-east-1
+
+resources:
+  Parameters:
+    EC2SSHKeyPairName:
+      Description: >-
+        OPTIONAL: Name of an existing EC2 KeyPair to enable SSH access to the
+        instances. Required only if an EC2ClientInstanceType is specified
+      Type: String
+      ConstraintDescription: Must be the name of an existing EC2 KeyPair in same region.
+      Default: '${param:ssh-key-name}'
+    Env:
+      Description: 'Environment tag, e.g. prod, nonprod.'
+      Default: test
+      Type: String
+      AllowedPattern: '[a-z0-9]+'
+      MaxLength: 15
+    DbInstanceType:
+      Description: Neptune DB instance type
+      Type: String
+      Default: db.t3.medium
+      AllowedValues:
+        - db.t3.medium
+      ConstraintDescription: >-
+        Must be a valid Neptune instance type. Note that for Stockholm and OSU
+        only R5 and T3 instances are available.
+    MinNCUs:
+      Description: >-
+        Min NCUs to be set on the Neptune cluster(Should be less than or equal to
+        MaxNCUs). Required if DBInstance type is db.serverless
+      Default: 2.5
+      Type: Number
+      MinValue: 1
+      MaxValue: 128
+      ConstraintDescription: Must be a valid value between 1 and 128.
+    MaxNCUs:
+      Description: >-
+        Max NCUs to be set on the Neptune cluster(Should be greater than or equal
+        to MinNCUs). Required if DBInstance type is db.serverless
+      Default: 128
+      Type: Number
+      MinValue: 1
+      MaxValue: 128
+      ConstraintDescription: Must be a valid value between 1 and 128.
+    DBReplicaIdentifierSuffix:
+      Description: >-
+        OPTIONAL: The ID for the Neptune Replica to use. Empty means no read
+        replica. Maximum Length allowed is 32 characters.
+      Type: String
+      Default: ''
+      MaxLength: 32
+    DBClusterId:
+      Default: '${param:dbcluster}'
+      Description: >-
+        OPTIONAL: Enter the Cluster id of your Neptune cluster. Maximum Length
+        allowed is 38 characters.
+      Type: String
+      AllowedPattern: '^[a-zA-Z]{0}(?:-?[a-zA-Z0-9]){0,37}$'
+      MaxLength: 38
+    DBClusterPort:
+      Type: String
+      Default: '8182'
+      Description: Enter the port of your Neptune cluster
+    EC2ClientInstanceType:
+      Description: >-
+        OPTIONAL: EC2 client instance. Required only if EC2 client needs to setup.
+        Please refer to https://aws.amazon.com/ec2/pricing/ for pricing.
+      Type: String
+      Default: t3.small
+      AllowedValues:
+        - t3.small
+      ConstraintDescription: >-
+        Must be a valid EC2 instance type. Note some regions support limited
+        instance types only. Ex: Stockholm and OSU does not support R4 instances
+    NeptuneQueryTimeout:
+      Type: Number
+      Default: 20000
+      Description: Neptune Query Time out (in milliseconds)
+    NeptuneEnableAuditLog:
+      Type: Number
+      Default: 0
+      AllowedValues:
+        - 0
+        - 1
+      Description: Enable Audit Log. 0 means disable and 1 means enable.
+    IamAuthEnabled:
+      Type: String
+      Default: 'false'
+      AllowedValues:
+        - 'true'
+        - 'false'
+      Description: Enable IAM Auth for Neptune.
+    SetupGremlinConsole:
+      Type: String
+      Default: 'true'
+      AllowedValues:
+        - 'true'
+        - 'false'
+      Description: >-
+        OPTIONAL: Setup Gremlin console on EC2 client. Used only if
+        EC2ClientInstanceType is specified.
+    SetupRDF4JConsole:
+      Type: String
+      Default: 'true'
+      AllowedValues:
+        - 'true'
+        - 'false'
+      Description: >-
+        OPTIONAL: Setup RDF4J console on EC2 client. Used only if
+        EC2ClientInstanceType is specified.
+    AttachBulkloadIAMRoleToNeptuneCluster:
+      Type: String
+      Default: 'true'
+      AllowedValues:
+        - 'true'
+        - 'false'
+      Description: Attach Bulkload IAM role to cluster
+    NotebookInstanceType:
+      Description: >-
+        SageMaker Notebook instance type. Please refer
+        https://aws.amazon.com/sagemaker/pricing/ for uptodate allowed instance
+        type in aws region and https://aws.amazon.com/neptune/pricing/ for
+        pricing.
+      Type: String
+      Default: none
+      AllowedValues:
+        - none
+      ConstraintDescription: Must be a valid SageMaker instance type.
+    NeptuneSagemakerNotebookStartupScript:
+      Description: 'OPTIONAL: Startup script additions for the notebook instance.'
+      Type: String
+      Default: ''
+  Rules:
+    DBInstanceTypeVsRegion:
+      RuleCondition: !Or 
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - eu-north-1
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - us-gov-east-1
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - us-west-1
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - sa-east-1
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - ap-east-1
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - ca-central-1
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - me-south-1
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - af-south-1
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - cn-northwest-1
+      Assertions:
+        - Assert:
+            'Fn::Contains':
+              - - db.t3.medium
+                - db.r5.large
+                - db.r5.xlarge
+                - db.r5.2xlarge
+                - db.r5.4xlarge
+                - db.r5.12xlarge
+                - db.serverless
+              - !Ref DbInstanceType
+          AssertDescription: >-
+            Only R5 and T3 Instances are available in eu-north-1 (ARN),
+            us-gov-east-1 (OSU), ca-central-1 (YUL), us-west-1 (SFO), me-south-1
+            (BAH), ap-east-1 (HKG), sa-east-1 (GRU) af-south-1 (CPT) and
+            cn-northwest-1 (ZHY)
+    EC2ClientInstanceTypeVsRegion:
+      RuleCondition: !Or 
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - eu-north-1
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - us-gov-east-1
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - us-west-1
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - ap-east-1
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - sa-east-1
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - ca-central-1
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - me-south-1
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - af-south-1
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - cn-northwest-1
+      Assertions:
+        - Assert: !Not 
+            - 'Fn::Contains':
+                - - r4.large
+                  - r4.xlarge
+                  - r4.2xlarge
+                  - r4.4xlarge
+                  - r4.8xlarge
+                - !Ref EC2ClientInstanceType
+          AssertDescription: >-
+            R4 Instances are not available in eu-north-1 (ARN), us-gov-east-1
+            (OSU), ca-central-1 (YUL), us-west-1(SFO), me-south-1 (BAH), ap-east-1
+            (HKG), sa-east-1 (GRU) af-south-1 (CPT) and cn-northwest-1 (ZHY)
+    SagemakerNotebookInstanceTypeVsRegion:
+      RuleCondition: !Or 
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - us-gov-east-1
+        - !Equals 
+          - !Ref 'AWS::Region'
+          - us-gov-west-1
+      Assertions:
+        - Assert:
+            'Fn::Contains':
+              - - none
+              - !Ref NotebookInstanceType
+          AssertDescription: >-
+            Neptune Sagemaker notebooks are not available in us-gov-east-1 (OSU)
+            and us-gov-west-1 (PDT)
+    EC2SSHKeyPairNameRequiredIfEC2Instance:
+      RuleCondition: !Not 
+        - !Equals 
+          - !Ref EC2ClientInstanceType
+          - none
+      Assertions:
+        - Assert: !Not 
+            - !Equals 
+              - !Ref EC2SSHKeyPairName
+              - ''
+          AssertDescription: EC2SSHKeyPairName is required if an EC2 client instance is specified
+  Conditions:
+    CreateDBReplicaInstance: !Not 
+      - !Equals 
+        - !Ref DBReplicaIdentifierSuffix
+        - ''
+    AZ3NotPresent: !Or 
+      - !Equals 
+        - !Ref 'AWS::Region'
+        - ca-central-1
+      - !Equals 
+        - !Ref 'AWS::Region'
+        - us-west-1
+    AZ3Present: !Not 
+      - !Condition AZ3NotPresent
+    CreateEC2Instance: !Not 
+      - !Equals 
+        - !Ref EC2ClientInstanceType
+        - none
+    CreateSagemakerNotebook: !Not 
+      - !Equals 
+        - !Ref NotebookInstanceType
+        - none
+  Resources:
+    NeptuneStack:
+      Type: 'AWS::CloudFormation::Stack'
+      Properties:
+        TemplateURL: !Join 
+          - ''
+          - - >-
+              https://s3.amazonaws.com/aws-neptune-customer-samples/v2/cloudformation-templates/neptune-base-stack.json
+        TimeoutInMinutes: '60'
+        Parameters:
+          Env: !Ref Env
+          DBReplicaIdentifierSuffix: !Ref DBReplicaIdentifierSuffix
+          DBClusterId: !Ref DBClusterId
+          DBClusterPort: !Ref DBClusterPort
+          DbInstanceType: !Ref DbInstanceType
+          NeptuneQueryTimeout: !Ref NeptuneQueryTimeout
+          NeptuneEnableAuditLog: !Ref NeptuneEnableAuditLog
+          IamAuthEnabled: !Ref IamAuthEnabled
+          AttachBulkloadIAMRoleToNeptuneCluster: !Ref AttachBulkloadIAMRoleToNeptuneCluster
+          MinNCUs: !Ref MinNCUs
+          MaxNCUs: !Ref MaxNCUs
+    NeptuneEC2Client:
+      Type: 'AWS::CloudFormation::Stack'
+      Condition: CreateEC2Instance
+      Properties:
+        TemplateURL: !Join 
+          - ''
+          - - >-
+              https://s3.amazonaws.com/aws-neptune-customer-samples/v2/cloudformation-templates/neptune-ec2-client.json
+        TimeoutInMinutes: '30'
+        Parameters:
+          Env: !Ref Env
+          EC2SSHKeyPairName: !Ref EC2SSHKeyPairName
+          EC2ClientInstanceType: !Ref EC2ClientInstanceType
+          SetupGremlinConsole: !Ref SetupGremlinConsole
+          SetupRDF4JConsole: !Ref SetupRDF4JConsole
+          VPC: !GetAtt 
+            - NeptuneStack
+            - Outputs.VPC
+          Subnet: !GetAtt 
+            - NeptuneStack
+            - Outputs.PublicSubnet1
+          NeptuneDBCluster: !GetAtt 
+            - NeptuneStack
+            - Outputs.DBClusterId
+          NeptuneDBClusterEndpoint: !GetAtt 
+            - NeptuneStack
+            - Outputs.DBClusterEndpoint
+          NeptuneDBClusterPort: !GetAtt 
+            - NeptuneStack
+            - Outputs.DBClusterPort
+          NeptuneClientRole: !GetAtt 
+            - NeptuneStack
+            - Outputs.NeptuneClientRole
+    NeptuneSagemakerNotebook:
+      Type: 'AWS::CloudFormation::Stack'
+      Condition: CreateSagemakerNotebook
+      Properties:
+        TemplateURL: !Join 
+          - ''
+          - - >-
+              https://s3.amazonaws.com/aws-neptune-customer-samples/v2/cloudformation-templates/neptune-sagemaker-notebook-stack.json
+        TimeoutInMinutes: '30'
+        Parameters:
+          Env: !Ref Env
+          NotebookInstanceType: !Ref NotebookInstanceType
+          NeptuneClusterEndpoint: !GetAtt 
+            - NeptuneStack
+            - Outputs.DBClusterEndpoint
+          NeptuneClusterPort: !GetAtt 
+            - NeptuneStack
+            - Outputs.DBClusterPort
+          NeptuneClusterVpc: !GetAtt 
+            - NeptuneStack
+            - Outputs.VPC
+          NeptuneClusterSubnetId: !GetAtt 
+            - NeptuneStack
+            - Outputs.PublicSubnet1
+          NeptuneClientSecurityGroup: !GetAtt 
+            - NeptuneStack
+            - Outputs.NeptuneSG
+          NeptuneLoadFromS3RoleArn: !GetAtt 
+            - NeptuneStack
+            - Outputs.NeptuneLoadFromS3IAMRoleArn
+          StartupScript: !Ref NeptuneSagemakerNotebookStartupScript
+          DBClusterId: !GetAtt 
+            - NeptuneStack
+            - Outputs.DBClusterId
+          NeptuneClusterResourceId: !GetAtt 
+            - NeptuneStack
+            - Outputs.DBClusterResourceId
+          EnableIamAuthOnNeptune: !Ref IamAuthEnabled
+  Outputs:
+    DBClusterId:
+      Description: Neptune Cluster Identifier
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.DBClusterId
+    DBSubnetGroupId:
+      Description: Neptune DBSubnetGroup Identifier
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.DBSubnetGroupId
+    NeptuneSecurityGroup:
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.NeptuneSG
+    DBClusterResourceId:
+      Description: Neptune Cluster Resource Identifier
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.DBClusterResourceId
+    DBClusterEndpoint:
+      Description: Master Endpoint for Neptune Cluster
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.DBClusterEndpoint
+    DBInstanceEndpoint:
+      Description: Master Instance Endpoint
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.DBInstanceEndpoint
+    DBReplicaInstanceEndpoint:
+      Description: ReadReplica Instance Endpoint
+      Condition: CreateDBReplicaInstance
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.DBReplicaInstanceEndpoint
+    SparqlEndpoint:
+      Description: Sparql Endpoint for Neptune
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.SparqlEndpoint
+    GremlinEndpoint:
+      Description: Gremlin Endpoint for Neptune
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.GremlinEndpoint
+    LoaderEndpoint:
+      Description: Loader Endpoint for Neptune
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.LoaderEndpoint
+    DBClusterReadEndpoint:
+      Description: DB cluster Read Endpoint
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.DBClusterReadEndpoint
+    DBClusterPort:
+      Description: Port for the Neptune Cluster
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.DBClusterPort
+    NeptuneLoadFromS3IAMRoleArn:
+      Description: IAM Role for loading data in Neptune
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.NeptuneLoadFromS3IAMRoleArn
+    NeptuneIamAuthUser:
+      Description: IAM User for IAM Auth
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.NeptuneIamAuthUser
+    EC2Client:
+      Condition: CreateEC2Instance
+      Description: EC2 client Identifier
+      Value: !GetAtt 
+        - NeptuneEC2Client
+        - Outputs.EC2Client
+    SSHAccess:
+      Condition: CreateEC2Instance
+      Description: This is how you gain remote access to the EC2 client.
+      Value: !GetAtt 
+        - NeptuneEC2Client
+        - Outputs.SSHAccess
+    VPC:
+      Description: VPC
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.VPC
+    Subnet1:
+      Description: Private Subnet1
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.PrivateSubnet1
+    Subnet2:
+      Description: Private Subnet2
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.PrivateSubnet2
+    Subnet3:
+      Description: Private Subnet3
+      Condition: AZ3Present
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.PrivateSubnet3
+    Subnet4:
+      Description: Public Subnet1
+      Value: !GetAtt 
+        - NeptuneStack
+        - Outputs.PublicSubnet1
+    NeptuneSagemakerNotebook:
+      Condition: CreateSagemakerNotebook
+      Description: Neptune Sagemaker Notebook Name
+      Value: !GetAtt 
+        - NeptuneSagemakerNotebook
+        - Outputs.NeptuneSagemakerNotebook
+    NeptuneNotebookInstanceLifecycleConfigId:
+      Condition: CreateSagemakerNotebook
+      Description: Neptune Sagemaker Notebook Instance Lifecycle ConfigId
+      Value: !GetAtt 
+        - NeptuneSagemakerNotebook
+        - Outputs.NeptuneNotebookInstanceLifecycleConfigId
