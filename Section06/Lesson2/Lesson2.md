@@ -34,8 +34,4 @@ g.V('9a20145c-2b3c-11ee-be56-0242ac120002').as('v1').V('e2d4fda8-054d-11ee-be56-
 g.V('9d412ed2-2b3c-11ee-be56-0242ac120002').as('v1').V('9e89d1e8-2b3e-11ee-be56-0242ac120002').as('v2').addE("interest").from('v1').to('v2').property(id, '274b692e-2b58-11ee-be56-0242ac120002').property('weight', 8.0).iterate()
 g.V('9d412ed2-2b3c-11ee-be56-0242ac120002').as('v1').V('9a121f44-2b3e-11ee-be56-0242ac120002').as('v2').addE("interest").from('v1').to('v2').property(id, '68f61406-2b52-11ee-be56-0242ac120002').property('weight', 5.0).iterate()
 g.V('9d412ed2-2b3c-11ee-be56-0242ac120002').as('v1').V('e2d4fda8-054d-11ee-be56-0242ac120002').as('v2').addE("interest").from('v1').to('v2').property(id, '812a0654-2b52-11ee-be56-0242ac120002').property('weight', 7.0).iterate()
-g.V('').as('v1').V('').as('v2').addE("interest").from('v1').to('v2').property(id, '').property('weight', ).iterate()
-g.V('').as('v1').V('').as('v2').addE("interest").from('v1').to('v2').property(id, '').property('weight', ).iterate()
-g.V('').as('v1').V('').as('v2').addE("interest").from('v1').to('v2').property(id, '').property('weight', ).iterate()
-g.V('').as('v1').V('').as('v2').addE("interest").from('v1').to('v2').property(id, '').property('weight', ).iterate()
 ```
