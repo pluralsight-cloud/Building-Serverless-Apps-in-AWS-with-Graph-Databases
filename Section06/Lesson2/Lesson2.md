@@ -3,6 +3,11 @@ Deploy the S3 Bucket:
 sls deploy --param="bucket-name=<BUCKET_NAME>"
 ```
 
+Export the Neptuen URI:
+```
+export NEPTUNE_ENDPOINT=<ENDPOINT_URL>:<PORT_NUMBER>
+```
+
 Neptune Load Command:
 ```
 curl -X POST -H 'Content-Type: application/json' \
@@ -16,4 +21,12 @@ https://$NEPTUNE_ENDPOINT/loader -d '
 "parallelism": "MEDIUM",
 "queueRequest": "TRUE"
 }'
+```
+
+Test the import:
+```
+:remote connect tinkerpop.server conf/neptune-remote.yaml
+:remote console
+g.V().valueMap(true)
+g.E().valueMapt(true)
 ```
