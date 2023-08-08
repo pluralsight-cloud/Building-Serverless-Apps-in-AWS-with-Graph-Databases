@@ -1,19 +1,49 @@
 service: acg-neptune-load-data
 
-plugins:
-  - serverless-s3-remover
+#plugins:
+#  - serverless-s3-remover
+
+#custom:
+#  remover:
+#    buckets:
+#      - ${self:provider.environment.S3_BUCKET}
 
 custom:
-  remover:
-    buckets:
-      - ${self:provider.environment.S3_BUCKET}
+  distBucketUrl:
+    us-east-1:
+      # us-east-1 uses a different URL format than the other regions
+      Fn::Join:
+        - ""
+        - - https://s3.amazonaws.com/
+          - Ref: DistBucket
+    default:
+      # All other regions
+      Fn::Join:
+        - ""
+        - - https://s3-
+          - Ref: AWS::Region
+          - .amazonaws.com/
+          - Ref: DistBucket
 
 provider:
   name: aws
   region: us-east-1
+  stage: dev
   environment:
     S3_BUCKET: '${param:bucket-name}'
-    
+    APIGATEWAY_URL:
+      Fn::Join:
+        - ""
+        - - https://
+          - Ref: ApiGatewayRestApi
+          - .execute-api.
+          - Ref: AWS::Region
+          - .amazonaws.com/
+          - ${self:provider.stage}
+
+  apiGateway:
+    shouldStartNameWithService: true
+
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -27,6 +57,44 @@ provider:
       Resource: "*"
 
 resources:
+  Resources:
+    # Customize the API Gateway resource
+    ApiGatewayRestApi:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: 'RestAPI-${self:provider.environment.S3_BUCKET}'
+        # Enable gzip compression
+        MinimumCompressionSize: 1000
+
+    # S3 Bucket for the distribution bundles
+    DistBucket:
+      Type: AWS::S3::Bucket
+      DeletionPolicy: Delete
+      Properties:
+        BucketName: ${self:provider.environment.S3_BUCKET}
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: ObjectWriter
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - "*"
+              AllowedMethods:
+                - "GET"
+              AllowedOrigins:
+                - Fn::Join:
+                    - ""
+                    - - https://
+                      - Ref: ApiGatewayRestApi
+                      - .execute-api.
+                      - Ref: AWS::Region
+                      - .amazonaws.com
+              MaxAge: 3000
   Outputs:
     S3Bucket:
       Description: S3 bucket for neptune to load from
