@@ -1,0 +1,8 @@
+~id,name:String,age:Int,born:String,status:String,~label
+d5a80900-054c-11ee-be56-0242ac120002,Bob,45,04-04-1978,married,person
+478689e8-054d-11ee-be56-0242ac120002,Sally,38,06-09-1985,married,person
+875825ae-054d-11ee-be56-0242ac120002,Lisa,21,02-02-2002,single,person
+7961b9aa-2b3c-11ee-be56-0242ac120002,Jill,41,01-13-1982,single,person
+92a9b26e-2b3c-11ee-be56-0242ac120002,Marven,29,12-21-1994,single,person
+961fa61a-2b3c-11ee-be56-0242ac120002,Tim,22,09-02-2001,married,person
+9a20145c-2b3c-11ee-be56-0242ac120002,Will,36,03-04-1987,married,person
