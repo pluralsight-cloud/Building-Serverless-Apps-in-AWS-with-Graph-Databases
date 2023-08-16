@@ -10,7 +10,7 @@ export NEPTUNE_ENDPOINT=<ENDPOINT_URL>:<PORT_NUMBER>
 
 Neptune Load Command:
 ```
-curl -X POST -H 'Content-Type: application/json' \
+curl -X POST -H -k 'Content-Type: application/json' \
 https://$NEPTUNE_ENDPOINT/loader -d '
 {
 "source": "s3://<BUCKET_NAME>/<CSV>.csv",
